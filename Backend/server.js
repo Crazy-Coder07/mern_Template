@@ -11,7 +11,14 @@ const PORT=process.env.PORT;
 //  connection.js file located in the ./db directory. it is a method in node.js
 require('./db/connection');
 
+// accessing the collection from the database
+const User=require('./model/userSchema');
 
+// converted the json data into object when data send throught post() method
+app.use(express.json());
+
+// to accessing all the backend route we use middleware here
+app.use(require('./router/auth'));
 
 // middleware
 const logger=(req,res,next)=>{
