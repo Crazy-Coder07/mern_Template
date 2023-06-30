@@ -9,6 +9,7 @@
     res.send("hello world from the server")
 });
 
+
 //  sending data from backend to DB
  router.post('/register',async (req,res)=>{
     //  console.log(req.body);  // data=req.body
@@ -48,6 +49,7 @@
 // but when we create UI then first will send to backend and then backend to DB
 router.post('/signin',async (req,res)=>{
     try{
+        let token;
        const {email,password}=req.body;
        if(!email||!password){
            return res.status(400).json({error:"please fill the required field"})
@@ -55,12 +57,14 @@ router.post('/signin',async (req,res)=>{
       //   here userLogin are document of collection in DB 
        const userLogin=await User.findOne({email:email});
 
-       if(userLogin){
+       if(userLogin){ 
            const isMatch=await bcrypt.compareSync(password,userLogin.password);
+           token=await userLogin.generateAuthToken();
+           console.log(token);
            if(isMatch){
                  res.status(201).json({message:"user Signin successfully"})
-           } else{
-                res.status(400).json({error:"password are wrong"})  
+           }else{
+                res.status(400).json({error:"INVALID_CREDENTIAL"})  
            }
        }else{
             res.status(400).json({error:"user not login"})

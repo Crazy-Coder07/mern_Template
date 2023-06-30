@@ -2,6 +2,8 @@ const express=require("express")
 const app=express();
 const mongoose=require("mongoose");
 const dotenv=require("dotenv");
+const jwt=require("jsonwebtoken");
+
 
 // path of .env file
 dotenv.config({path:'./.env'});
