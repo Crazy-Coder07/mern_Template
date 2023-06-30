@@ -1,4 +1,5 @@
 const mongoose=require("mongoose");
+const bcrypt=require("bcryptjs");
 
 // creating structure of document
 const userSchema=new mongoose.Schema({
@@ -8,6 +9,10 @@ const userSchema=new mongoose.Schema({
     },
     email:{
         type:String,
+        required:true
+    },
+    phone:{
+        type:Number,
         required:true
     },
     work:{
@@ -23,6 +28,17 @@ const userSchema=new mongoose.Schema({
         required:true
     }
 })
+
+// hash the password before saving into DB
+userSchema.pre('save',async function (next){
+    if(this.isModified('password')){
+        this.password=await bcrypt.hashSync(this.password,12);
+        this.cpassword=await bcrypt.hashSync(this.cpassword,12);
+    }
+    next();
+})
+
+
 
 // adding document into the collection. i.e User is collection here
 const User=mongoose.model('USER',userSchema);
