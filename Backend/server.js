@@ -3,8 +3,10 @@ const app=express();
 const mongoose=require("mongoose");
 const dotenv=require("dotenv");
 const jwt=require("jsonwebtoken");
+const cors = require('cors');
 
 
+app.use(cors());
 // path of .env file
 dotenv.config({path:'./.env'});
 const PORT=process.env.PORT;
