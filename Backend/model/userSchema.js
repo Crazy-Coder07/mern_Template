@@ -55,7 +55,7 @@ userSchema.methods.generateAuthToken=async function(){
         // if both _id and this._id are same then it will generate a token and add in userSchema field
         let token=jwt.sign({_id:this._id},process.env.JWT_SECRET_KEY);
         // we are adding the tokenAditya into the our collection in DB
-        this.tokens=this.tokens.concat({token:token});
+        this.tokens=this.tokens.concat({token:token}); 
         await this.save();
         return token;
     }catch(err){

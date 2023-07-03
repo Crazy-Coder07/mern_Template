@@ -1,6 +1,11 @@
  const express=require("express");
  const router=express.Router(); 
  const bcrypt=require("bcryptjs");
+ const authenticate=require("../middleware/authenticate")
+ const jwt=require('jsonwebtoken');
+ const cookieParser=require("cookie-parser");
+
+ router.use(cookieParser());
 
  require('../db/connection');
  const User=require("../model/userSchema");
@@ -61,6 +66,12 @@ router.post('/signin',async (req,res)=>{
            const isMatch=await bcrypt.compareSync(password,userLogin.password);
            token=await userLogin.generateAuthToken();
            console.log(token);
+
+           res.cookie("jwtoken",token,{
+            expires:new Date(Date.now()+25892000000),
+            httpOnly:true
+           });
+
            if(isMatch){
                  res.status(201).json({message:"user Signin successfully"})
            }else{
@@ -76,14 +87,28 @@ router.post('/signin',async (req,res)=>{
 
 // here we sended data from DB to backend localhost:5000/contact in json format
 // and above two we send from backend to DB
-router.get('/contact',async (req,res)=>{
-    try{
-      const alluser=await User.find({});
-      return res.status(201).json({alluser});
-    }catch(error){
-        console.log(err);
-    }
+// router.get('/contact',async (req,res)=>{
+//     try{
+//       const alluser=await User.find({});
+//       return res.status(201).json({alluser});
+//     }catch(err){
+//         console.log(err);
+//     }
+// })
+
+// now we want to open this page only when user are logged in completely using the token
+// here we use the authenticate middleware to check whether use are login or not using token 
+router.get('/about',authenticate,(req,res)=>{
+    res.send(req.rootUser);
+    console.log("Hello from the about pages")
 })
+// if user is login then we send the responese
+router.get('/contact',authenticate,(req,res)=>{
+    res.send(req.rootUser);
+    console.log("Hello from the contact pages")
+})
+
+
 
 // overall in this we learn to send the data from backend to DB(using post()) and also from DB to backend(using get())
 
